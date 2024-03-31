@@ -23,11 +23,20 @@
 //
 const UI = (function () {
 
-let props = ["value", "hidden", "checked"];
+let props = [ "autoplay", "checked", "checked", "contentEditable", "controls",
+  "default", "hidden", "loop", "selected", "spellcheck", "value", "id", "title",
+  "accessKey", "dir", "dropzone", "lang", "src", "alt", "preload", "poster",
+  "kind", "label", "srclang", "sandbox", "srcdoc", "type", "value", "accept",
+  "placeholder", "acceptCharset", "action", "autocomplete", "enctype", "method",
+  "name", "pattern", "htmlFor", "max", "min", "step", "wrap", "useMap", "shape",
+  "coords", "align", "cite", "href", "target", "download", "download",
+  "hreflang", "ping", "start", "headers", "scope", "span" ];
+
 function setAttribute(attr, value, el) {
-  el.setAttribute(attr, value);
   if (props.includes(attr)) {
     el[attr] = value;
+  } else {
+    el.setAttribute(attr, value);
   }
 }
 
