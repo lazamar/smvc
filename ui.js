@@ -23,7 +23,7 @@
 //
 const UI = (function () {
 
-let props = ["value", "hidden"];
+let props = ["value", "hidden", "checked"];
 function setAttribute(attr, value, el) {
   el.setAttribute(attr, value);
   if (props.includes(attr)) {

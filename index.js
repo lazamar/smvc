@@ -55,6 +55,11 @@ function update (s, msg) {
         entries: s.entries.filter(e => e.id !== id)
       });
     }
+    case "DeleteComplete" in msg: {
+      return Object.assign({}, s, {
+        entries: s.entries.filter(e => !e.completed)
+      });
+    }
     case "Check" in msg: {
       const { Check : { id, isCompleted } } = msg;
       return Object.assign({}, s, {
@@ -65,6 +70,19 @@ function update (s, msg) {
           return entry
         })
       });
+    }
+    case "CheckAll" in msg: {
+      const { CheckAll : completed } = msg;
+      return Object.assign({}, s, {
+        entries: s.entries.map(entry => {
+          entry.completed = completed;
+          return entry
+        })
+      });
+    }
+    case "ChangeVisibility" in msg: {
+      const { ChangeVisibility : visibility } = msg;
+      return Object.assign({}, s, { visibility });
     }
   }
   return s;
@@ -124,6 +142,7 @@ function viewEntries(visibility, entries) {
   return h("section", { class : "main", style: `visibility: ${cssVisibility}` }, [
     h("input", {
       class: "toggle-all",
+      id: "toggle-all",
       type: "checkbox",
       checked: allCompleted,
       onClick: emit({ CheckAll : !allCompleted })
