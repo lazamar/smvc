@@ -4,14 +4,19 @@
 		<meta charset="utf-8">
 		<title>Html-UI • Million</title>
 		<style>
-			main {
-				margin: auto;
-				width: 900px;
-				line-height: 0;
+			body {
+				height: 100vh;
+				overflow: hidden;
 			}
-			div {
-				font-family: monospace;
+			section {
+				position: relative;
+				height: 100vh;
+				width: 100%;
+				overflow-x: scroll;
+			}
+			span {
 				display: inline-block;
+				position: absolute;
 				margin: 0;
 				width: 10px;
 				height: 10px;
