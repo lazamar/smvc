@@ -115,6 +115,16 @@ function diffList(ls, rs) {
   return diffs;
 }
 
+function addListener(enqueue, el, event, handle) {
+  const listener = e => enqueue(handle(e));
+  let ui = el._ui || {};
+  let listeners = ui.listeners || {};
+  listeners[event] = listener;
+  ui.listeners = listeners;
+  el._ui = ui;
+  el.addEventListener(event, listener)
+}
+
 function create(enqueue, spec) {
   if (spec.textContent !== undefined) {
     let el = document.createTextNode(spec.textContent);
@@ -132,7 +142,7 @@ function create(enqueue, spec) {
     }
 
     event
-      ? el.addEventListener(event, e => enqueue(value(e)))
+      ? addListener(enqueue, el, event, value)
       : setAttribute(attr, value, el);
   }
 
@@ -153,7 +163,7 @@ function modify(el, enqueue, diff) {
     setAttribute(attr, diff.setAttr[attr], el);
   }
   for (const event in diff.removeListeners) {
-    el.removeEventListener(event, diff.removeListeners[event]);
+    el.removeEventListener(event, el._ui.listeners[event]);
   }
   for (const event in diff.addListeners) {
     let handle = diff.addListeners[event];
@@ -162,7 +172,7 @@ function modify(el, enqueue, diff) {
       throw Error(`Event listener for ${attr} is not a function`);
     }
 
-    el.addEventListener(event, e => enqueue(handle(e)));
+    addListener(enqueue, el, event, handle);
   }
   if (diff.children.length < el.childNodes.length) {
     throw new Error("unmatched children lengths");
