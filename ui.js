@@ -23,17 +23,17 @@
 //
 const UI = (function () {
 
-let props = [ "autoplay", "checked", "checked", "contentEditable", "controls",
+let props = new Set([ "autoplay", "checked", "checked", "contentEditable", "controls",
   "default", "hidden", "loop", "selected", "spellcheck", "value", "id", "title",
   "accessKey", "dir", "dropzone", "lang", "src", "alt", "preload", "poster",
   "kind", "label", "srclang", "sandbox", "srcdoc", "type", "value", "accept",
   "placeholder", "acceptCharset", "action", "autocomplete", "enctype", "method",
   "name", "pattern", "htmlFor", "max", "min", "step", "wrap", "useMap", "shape",
   "coords", "align", "cite", "href", "target", "download", "download",
-  "hreflang", "ping", "start", "headers", "scope", "span" ];
+  "hreflang", "ping", "start", "headers", "scope", "span" ]);
 
 function setAttribute(attr, value, el) {
-  if (props.includes(attr)) {
+  if (props.has(attr)) {
     el[attr] = value;
   } else {
     el.setAttribute(attr, value);
@@ -104,13 +104,13 @@ function diffList(ls, rs) {
   let len = Math.max(ls.length, rs.length);
   let diffs = [];
   for (let i = 0; i < len; i++) {
-    diffs.push(
-      ls[i] === undefined
-      ? { create: rs[i] }
-      : rs[i] == undefined
-      ? { remove: true }
-      : diffOne(ls[i], rs[i])
-    );
+    if (ls[i] === undefined) {
+      diffs.push({ create: rs[i] });
+    } else if (rs[i] == undefined) {
+      diffs.push({ remove: true });
+    } else {
+      diffs.push(diffOne(ls[i], rs[i]));
+    }
   }
   return diffs;
 }
