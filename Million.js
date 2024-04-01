@@ -1,15 +1,15 @@
 const { init, h, text } = UI;
 
-function randomPrimary() {
-  return 1 + Math.ceil(Math.random() * 255);
-}
-
-const colours = Array.from({ length: 200 }).map(_ =>
-  `rgb(${randomPrimary()}, ${randomPrimary()}, ${randomPrimary()})`
-);
+const colours = Array.from({ length: 200 }).map(_ => {
+  const r = Math.ceil(Math.random() * 255);
+  const g = Math.ceil(Math.random() * 255);
+  const b = Math.ceil(Math.random() * 255);
+  return `rgb(${r}, ${g}, ${b})`
+});
 
 function randomColour() {
-  return colours[Math.floor(Math.random()*colours.length)];
+  const choice = Math.floor(Math.random() * colours.length);
+  return colours[choice];
 }
 
 function update({ nodes, scrollPosition, scrollDifference }, msg, enqueue) {
@@ -35,6 +35,7 @@ function view({ nodes, scrollPosition, scrollDifference }) {
   const nodeWidth = 10;
   const rowHeight = 10;
   const rowLength = 100;
+  const totalHeight = Math.ceil(nodes.length / rowLength) * rowHeight;
 
   const elsInVerticalSpace = height => rowLength * Math.ceil(height / rowHeight);
 
@@ -58,10 +59,10 @@ function view({ nodes, scrollPosition, scrollDifference }) {
       const style = `
         background-color: ${colour};
         transform: translate(${left}px, ${top}px);`;
-      squares.push(h("span", { style: style }, []));
+      const element = h("span", { style: style }, []);
+      squares.push(element);
   }
 
-  const totalHeight = Math.ceil(nodes.length / rowLength) * rowHeight;
   return [
     h("section", { onScroll: e => ({ ScrollEvent: e.target.scrollTop }) }, [
       h("div", { style: `position: absolute; height: ${totalHeight}px`}, squares)

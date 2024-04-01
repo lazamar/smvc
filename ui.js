@@ -47,15 +47,13 @@ function eventName(str) {
   return null;
 }
 
-const noop = { noop : true };
-
 // diff two specs
 function diffOne(l, r) {
   let isText = l.textContent !== undefined;
   if (isText) {
     return l.textContent !== r.textContent
       ? { replace: r }
-      : noop;
+      : { noop : true };
   }
 
   if (l.tag !== r.tag) {
@@ -96,7 +94,7 @@ function diffOne(l, r) {
         (Array.from(Object.keys(setAttr)).length == 0)
 
   if (noChildrenChange && noAttributeChange) {
-    return noop;
+    return { noop : true };
   }
 
   return { modify: { removeAttr, setAttr, removeListeners, addListeners, children } };
