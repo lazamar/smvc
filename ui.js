@@ -47,13 +47,15 @@ function eventName(str) {
   return null;
 }
 
+const noop = { noop : true };
+
 // diff two specs
 function diffOne(l, r) {
   let isText = l.textContent !== undefined;
   if (isText) {
     return l.textContent !== r.textContent
       ? { replace: r }
-      : { noop: true };
+      : noop;
   }
 
   if (l.tag !== r.tag) {
@@ -94,7 +96,7 @@ function diffOne(l, r) {
         (Array.from(Object.keys(setAttr)).length == 0)
 
   if (noChildrenChange && noAttributeChange) {
-    return { noop : true }
+    return noop;
   }
 
   return { modify: { removeAttr, setAttr, removeListeners, addListeners, children } };
@@ -104,25 +106,24 @@ function diffList(ls, rs) {
   let len = Math.max(ls.length, rs.length);
   let diffs = [];
   for (let i = 0; i < len; i++) {
-    if (ls[i] === undefined) {
-      diffs.push({ create: rs[i] });
-    } else if (rs[i] == undefined) {
-      diffs.push({ remove: true });
-    } else {
-      diffs.push(diffOne(ls[i], rs[i]));
-    }
+    diffs.push(
+      (ls[i] === undefined)
+      ? { create: rs[i] }
+      : (rs[i] == undefined)
+      ? { remove: true }
+      : diffOne(ls[i], rs[i])
+    );
   }
   return diffs;
 }
 
 function addListener(enqueue, el, event, handle) {
+  if (typeof handle !== "function") {
+    throw Error(`Event listener for ${attr} is not a function`);
+  }
   const listener = e => enqueue(handle(e));
-  let ui = el._ui || {};
-  let listeners = ui.listeners || {};
-  listeners[event] = listener;
-  ui.listeners = listeners;
-  el._ui = ui;
-  el.addEventListener(event, listener)
+  el._ui.listeners[event] = listener;
+  el.addEventListener(event, listener);
 }
 
 function create(enqueue, spec) {
@@ -132,15 +133,11 @@ function create(enqueue, spec) {
   }
 
   let el = document.createElement(spec.tag);
+  el._ui = { listeners : [] };
 
   for (const attr in spec.attributes) {
     let event = eventName(attr);
     let value = spec.attributes[attr];
-
-    if (event && typeof value !== "function") {
-      throw Error(`Event listener for ${attr} is not a function`);
-    }
-
     event
       ? addListener(enqueue, el, event, value)
       : setAttribute(attr, value, el);
@@ -167,11 +164,6 @@ function modify(el, enqueue, diff) {
   }
   for (const event in diff.addListeners) {
     let handle = diff.addListeners[event];
-
-    if (typeof handle !== "function") {
-      throw Error(`Event listener for ${attr} is not a function`);
-    }
-
     addListener(enqueue, el, event, handle);
   }
   if (diff.children.length < el.childNodes.length) {
@@ -184,32 +176,46 @@ function modify(el, enqueue, diff) {
 function apply(el, enqueue, childrenDiff) {
   for (let i = 0, k = 0; i < childrenDiff.length; i++, k++) {
     let diff = childrenDiff[i];
-    if (diff.remove) {
-      el.childNodes[k].remove();
-      k--;
-    } else if (diff.modify !== undefined) {
-      modify(el.childNodes[k], enqueue, diff.modify);
-    } else if (diff.create !== undefined) {
-      if (k < el.childNodes.length) {
-        throw new Error("Adding in the middle of children: " + k + " " + el.childNodes.length);
+    let action = Object.keys(diff)[0];
+    switch (action) {
+      case "remove":
+        el.childNodes[k].remove();
+        k--;
+        break;
+
+      case "modify":
+        modify(el.childNodes[k], enqueue, diff.modify);
+        break;
+
+      case "create": {
+        if (k < el.childNodes.length) {
+          throw new Error("Adding in the middle of children: " + k + " " + el.childNodes.length);
+        }
+        let child = create(enqueue, diff.create);
+        el.appendChild(child);
+        break;
       }
-      let child = create(enqueue, diff.create);
-      el.appendChild(child);
-    } else if (diff.replace !== undefined) {
-      let child = create(enqueue, diff.replace);
-      el.childNodes[k].replaceWith(child);
-    } else if (diff.noop) {
-    } else {
-      throw new Error("Unexpected diff option: " + Object.keys(diff));
+
+      case "replace": {
+        let child = create(enqueue, diff.replace);
+        el.childNodes[k].replaceWith(child);
+        break;
+      }
+
+      case "noop":
+        break;
+
+      default:
+        throw new Error("Unexpected diff option: " + Object.keys(diff));
     }
   }
 }
 
 // Create an HTML element
 function h(tag, attributes, children) {
-  if (children.includes(undefined)) {
-    throw new Error("Undefined children in: ", JSON.stringify(children));
-  }
+  console.assert(typeof tag === "string");
+  console.assert(typeof attributes === "object");
+  console.assert(Array.isArray(children) && !children.includes(undefined));
   return { tag, attributes, children };
 }
 
