@@ -125,6 +125,10 @@ function addListener(enqueue, el, event, handle) {
 }
 
 function create(enqueue, spec) {
+  if (!(spec instanceof Element)) {
+    throw new Error(`Expected an instance of Element but found: ${JSON.stringify(spec)}`);
+  }
+
   if (spec.textContent !== undefined) {
     let el = document.createTextNode(spec.textContent);
     return el;
@@ -209,17 +213,21 @@ function apply(el, enqueue, childrenDiff) {
   }
 }
 
+class Element {
+  constructor(any) { Object.assign(this, any) }
+}
+
 // Create an HTML element
 function h(tag, attributes, children) {
   console.assert(typeof tag === "string");
   console.assert(typeof attributes === "object");
   console.assert(Array.isArray(children) && !children.includes(undefined));
-  return { tag, attributes, children };
+  return new Element({ tag, attributes, children });
 }
 
 // Create a text element
 function text(textContent) {
-  return { textContent }
+  return new Element({ textContent });
 }
 
 // Start managing the contents of an HTML node.
