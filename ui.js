@@ -49,6 +49,7 @@ function eventName(str) {
 
 // diff two specs
 function diffOne(l, r) {
+  console.assert(r instanceof Element, "Expected an instance of Element, found", r);
   let isText = l.textContent !== undefined;
   if (isText) {
     return l.textContent !== r.textContent
@@ -60,45 +61,30 @@ function diffOne(l, r) {
     return { replace: r };
   }
 
-  const removeAttr = [];
-  const setAttr = {};
-  const removeListeners = {};
-  const setListeners = {};
+  const remove = [];
+  const set = {};
+
   for (const attr in l.attributes) {
     if (r.attributes[attr] === undefined) {
-      let event = eventName(attr);
-      if (event !== null) {
-        removeListeners[event] = l.attributes[attr];
-      } else {
-        removeAttr.push(attr);
-      }
+      remove.push(attr);
     }
   }
 
   for (const attr in r.attributes) {
     if (r.attributes[attr] !== l.attributes[attr]) {
-      let event = eventName(attr);
-      if (event === null) {
-        setAttr[attr] = r.attributes[attr];
-      } else {
-        setListeners[event] = r.attributes[attr];
-      }
+      set[attr] = r.attributes[attr];
     }
   }
 
   const children = diffList(l.children, r.children);
   const noChildrenChange = children.every(e => e.noop);
   const noAttributeChange =
-        (removeAttr.length === 0) &&
-        (Array.from(Object.keys(setAttr)).length == 0) &&
-        (Array.from(Object.keys(setListeners)).length == 0) &&
-        (Array.from(Object.keys(removeListeners)).length == 0);
+        (remove.length === 0) &&
+        (Array.from(Object.keys(set)).length == 0);
 
-  if (noChildrenChange && noAttributeChange) {
-    return { noop : true };
-  }
-
-  return { modify: { removeAttr, setAttr, removeListeners, setListeners, children } };
+  return (noChildrenChange && noAttributeChange)
+    ? { noop : true }
+    : { modify: { remove, set, children } };
 }
 
 function diffList(ls, rs) {
@@ -135,9 +121,7 @@ function setListener(el, event, handle) {
 }
 
 function create(enqueue, spec) {
-  if (!(spec instanceof Element)) {
-    throw new Error(`Expected an instance of Element but found: ${JSON.stringify(spec)}`);
-  }
+  console.assert(spec instanceof Element, "Expected an instance of Element, found", spec);
 
   if (spec.textContent !== undefined) {
     let el = document.createTextNode(spec.textContent);
@@ -165,19 +149,23 @@ function create(enqueue, spec) {
 }
 
 function modify(el, enqueue, diff) {
-  for (const attr in diff.removeAttr) {
-    el.removeAttribute(attr);
+  for (const attr in diff.remove) {
+    const event = eventName(attr);
+    if (event === null) {
+      el.removeAttribute(attr);
+    } else {
+      el._ui.listeners[event] = undefined;
+      el.removeEventListener(event, listener);
+    }
   }
-  for (const attr in diff.setAttr) {
-    setAttribute(attr, diff.setAttr[attr], el);
-  }
-  for (const event in diff.removeListeners) {
-    el._ui.listeners[event] = undefined;
-    el.removeEventListener(event, listener);
-  }
-  for (const event in diff.setListeners) {
-    let handle = diff.setListeners[event];
-    setListener(el, event, handle);
+  for (const attr in diff.set) {
+    const value = diff.set[attr];
+    const event = eventName(attr);
+    if (event === null) {
+      setAttribute(attr, value, el);
+    } else {
+      setListener(el, event, value);
+    }
   }
   if (diff.children.length < el.childNodes.length) {
     throw new Error("unmatched children lengths");
@@ -201,9 +189,8 @@ function apply(el, enqueue, childrenDiff) {
         break;
 
       case "create": {
-        if (k < el.childNodes.length) {
-          throw new Error("Adding in the middle of children: " + k + " " + el.childNodes.length);
-        }
+        const len = el.childNodes.length;
+        console.assert(k === len, "adding to the middle of children", k, len);
         let child = create(enqueue, diff.create);
         el.appendChild(child);
         break;
