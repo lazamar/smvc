@@ -40,6 +40,26 @@ function setAttribute(attr, value, el) {
   }
 }
 
+function listener(event) {
+  const el = event.currentTarget;
+  const handler = el._ui.listeners[event.type];
+  const enqueue = el._ui.enqueue;
+  console.assert(typeof enqueue == "function", "Invalid enqueue");
+  const msg = handler(event);
+  if (msg !== undefined) enqueue(msg);
+}
+
+function setListener(el, event, handle) {
+  console.assert(typeof handle == "function", "Event listener is not a function for event:", event);
+
+  if (el._ui.listeners[event] === undefined) {
+    el.addEventListener(event, listener);
+  }
+
+  el._ui.listeners[event] = handle;
+}
+
+
 function eventName(str) {
   if (str.indexOf("on") == 0) {
     return str.slice(2).toLowerCase();
@@ -100,24 +120,6 @@ function diffList(ls, rs) {
     );
   }
   return diffs;
-}
-
-function listener(event) {
-  const el = event.currentTarget;
-  const handler = el._ui.listeners[event.type];
-  const enqueue = el._ui.enqueue;
-  console.assert(typeof enqueue == "function", "Invalid enqueue");
-  enqueue(handler(event));
-}
-
-function setListener(el, event, handle) {
-  console.assert(typeof handle == "function", "Event listener is not a function for event:", event);
-
-  if (el._ui.listeners[event] === undefined) {
-    el.addEventListener(event, listener);
-  }
-
-  el._ui.listeners[event] = handle;
 }
 
 function create(enqueue, spec) {
