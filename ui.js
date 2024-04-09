@@ -63,7 +63,7 @@ function diffOne(l, r) {
   const removeAttr = [];
   const setAttr = {};
   const removeListeners = {};
-  const addListeners = {};
+  const setListeners = {};
   for (const attr in l.attributes) {
     if (r.attributes[attr] === undefined) {
       let event = eventName(attr);
@@ -81,8 +81,7 @@ function diffOne(l, r) {
       if (event === null) {
         setAttr[attr] = r.attributes[attr];
       } else {
-        removeListeners[event] = l.attributes[attr];
-        addListeners[event] = r.attributes[attr];
+        setListeners[event] = r.attributes[attr];
       }
     }
   }
@@ -92,14 +91,14 @@ function diffOne(l, r) {
   const noAttributeChange =
         (removeAttr.length === 0) &&
         (Array.from(Object.keys(setAttr)).length == 0) &&
-        (Array.from(Object.keys(addListeners)).length == 0) &&
+        (Array.from(Object.keys(setListeners)).length == 0) &&
         (Array.from(Object.keys(removeListeners)).length == 0);
 
   if (noChildrenChange && noAttributeChange) {
     return { noop : true };
   }
 
-  return { modify: { removeAttr, setAttr, removeListeners, addListeners, children } };
+  return { modify: { removeAttr, setAttr, removeListeners, setListeners, children } };
 }
 
 function diffList(ls, rs) {
@@ -117,13 +116,22 @@ function diffList(ls, rs) {
   return diffs;
 }
 
-function addListener(enqueue, el, event, handle) {
-  if (typeof handle !== "function") {
-    throw Error(`Event listener for ${attr} is not a function`);
+function listener(event) {
+  const el = event.currentTarget;
+  const handler = el._ui.listeners[event.type];
+  const enqueue = el._ui.enqueue;
+  console.assert(typeof enqueue == "function", "Invalid enqueue");
+  enqueue(handler(event));
+}
+
+function setListener(el, event, handle) {
+  console.assert(typeof handle == "function", "Event listener is not a function for event:", event);
+
+  if (el._ui.listeners[event] === undefined) {
+    el.addEventListener(event, listener);
   }
-  const listener = e => enqueue(handle(e));
-  el._ui.listeners[event] = listener;
-  el.addEventListener(event, listener);
+
+  el._ui.listeners[event] = handle;
 }
 
 function create(enqueue, spec) {
@@ -137,13 +145,13 @@ function create(enqueue, spec) {
   }
 
   let el = document.createElement(spec.tag);
-  el._ui = { listeners : [] };
+  el._ui = { listeners : [], enqueue };
 
   for (const attr in spec.attributes) {
     let event = eventName(attr);
     let value = spec.attributes[attr];
     event
-      ? addListener(enqueue, el, event, value)
+      ? setListener(el, event, value)
       : setAttribute(attr, value, el);
   }
 
@@ -164,11 +172,12 @@ function modify(el, enqueue, diff) {
     setAttribute(attr, diff.setAttr[attr], el);
   }
   for (const event in diff.removeListeners) {
-    el.removeEventListener(event, el._ui.listeners[event]);
+    el._ui.listeners[event] = undefined;
+    el.removeEventListener(event, listener);
   }
-  for (const event in diff.addListeners) {
-    let handle = diff.addListeners[event];
-    addListener(enqueue, el, event, handle);
+  for (const event in diff.setListeners) {
+    let handle = diff.setListeners[event];
+    setListener(el, event, handle);
   }
   if (diff.children.length < el.childNodes.length) {
     throw new Error("unmatched children lengths");
