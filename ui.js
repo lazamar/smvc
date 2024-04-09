@@ -23,6 +23,13 @@
 //
 const UI = (function () {
 
+function assert(predicate, ...args) {
+  if (!predicate) {
+    console.error(...args);
+    throw new Error("fatal");
+  }
+}
+
 let props = new Set([ "autoplay", "checked", "checked", "contentEditable", "controls",
   "default", "hidden", "loop", "selected", "spellcheck", "value", "id", "title",
   "accessKey", "dir", "dropzone", "lang", "src", "alt", "preload", "poster",
@@ -44,13 +51,15 @@ function listener(event) {
   const el = event.currentTarget;
   const handler = el._ui.listeners[event.type];
   const enqueue = el._ui.enqueue;
-  console.assert(typeof enqueue == "function", "Invalid enqueue");
+  assert(typeof enqueue == "function", "Invalid enqueue");
   const msg = handler(event);
-  if (msg !== undefined) enqueue(msg);
+  if (msg !== undefined) {
+    enqueue(msg);
+  }
 }
 
 function setListener(el, event, handle) {
-  console.assert(typeof handle == "function", "Event listener is not a function for event:", event);
+  assert(typeof handle == "function", "Event listener is not a function for event:", event);
 
   if (el._ui.listeners[event] === undefined) {
     el.addEventListener(event, listener);
@@ -58,7 +67,6 @@ function setListener(el, event, handle) {
 
   el._ui.listeners[event] = handle;
 }
-
 
 function eventName(str) {
   if (str.indexOf("on") == 0) {
@@ -69,7 +77,7 @@ function eventName(str) {
 
 // diff two specs
 function diffOne(l, r) {
-  console.assert(r instanceof Element, "Expected an instance of Element, found", r);
+  assert(r instanceof Element, "Expected an instance of Element, found", r);
   let isText = l.textContent !== undefined;
   if (isText) {
     return l.textContent !== r.textContent
@@ -123,7 +131,7 @@ function diffList(ls, rs) {
 }
 
 function create(enqueue, spec) {
-  console.assert(spec instanceof Element, "Expected an instance of Element, found", spec);
+  assert(spec instanceof Element, "Expected an instance of Element, found", spec);
 
   if (spec.textContent !== undefined) {
     let el = document.createTextNode(spec.textContent);
@@ -131,18 +139,17 @@ function create(enqueue, spec) {
   }
 
   let el = document.createElement(spec.tag);
-  el._ui = { listeners : [], enqueue };
+  el._ui = { listeners : {}, enqueue };
 
   for (const attr in spec.attributes) {
     let event = eventName(attr);
     let value = spec.attributes[attr];
-    event
-      ? setListener(el, event, value)
-      : setAttribute(attr, value, el);
+    (event === null)
+      ? setAttribute(attr, value, el)
+      : setListener(el, event, value);
   }
 
-  for (let i in spec.children) {
-    const childSpec = spec.children[i];
+  for (let childSpec of spec.children) {
     const child = create(enqueue, childSpec);
     el.appendChild(child);
   }
@@ -151,7 +158,7 @@ function create(enqueue, spec) {
 }
 
 function modify(el, enqueue, diff) {
-  for (const attr in diff.remove) {
+  for (const attr of diff.remove) {
     const event = eventName(attr);
     if (event === null) {
       el.removeAttribute(attr);
@@ -160,19 +167,16 @@ function modify(el, enqueue, diff) {
       el.removeEventListener(event, listener);
     }
   }
+
   for (const attr in diff.set) {
     const value = diff.set[attr];
     const event = eventName(attr);
-    if (event === null) {
-      setAttribute(attr, value, el);
-    } else {
-      setListener(el, event, value);
-    }
-  }
-  if (diff.children.length < el.childNodes.length) {
-    throw new Error("unmatched children lengths");
+    (event === null)
+      ? setAttribute(attr, value, el)
+      : setListener(el, event, value);
   }
 
+  assert(diff.children.length >= el.childNodes.length, "unmatched children lengths");
   apply(el, enqueue, diff.children);
 }
 
@@ -192,7 +196,7 @@ function apply(el, enqueue, childrenDiff) {
 
       case "create": {
         const len = el.childNodes.length;
-        console.assert(k === len, "adding to the middle of children", k, len);
+        assert(k === len, "adding to the middle of children", k, len);
         let child = create(enqueue, diff.create);
         el.appendChild(child);
         break;
@@ -219,9 +223,9 @@ class Element {
 
 // Create an HTML element
 function h(tag, attributes, children) {
-  console.assert(typeof tag === "string");
-  console.assert(typeof attributes === "object");
-  console.assert(Array.isArray(children) && !children.includes(undefined));
+  assert(typeof tag === "string", "Invalid tag value:", tag);
+  assert(typeof attributes === "object", "Expected attributes object. Found:", attributes);
+  assert(Array.isArray(children), "Expected children array. Found:", children);
   return new Element({ tag, attributes, children });
 }
 
