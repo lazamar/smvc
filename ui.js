@@ -91,7 +91,9 @@ function diffOne(l, r) {
   const noChildrenChange = children.every(e => e.noop);
   const noAttributeChange =
         (removeAttr.length === 0) &&
-        (Array.from(Object.keys(setAttr)).length == 0)
+        (Array.from(Object.keys(setAttr)).length == 0) &&
+        (Array.from(Object.keys(addListeners)).length == 0) &&
+        (Array.from(Object.keys(removeListeners)).length == 0);
 
   if (noChildrenChange && noAttributeChange) {
     return { noop : true };
