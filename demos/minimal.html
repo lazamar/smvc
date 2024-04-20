@@ -1,0 +1,24 @@
+<html>
+  <body>
+    <div id="container"></div>
+		<script src="../ui.js"></script>
+    <script>
+      const { init, h, text } = UI;
+      const root = document.querySelector("#container");
+      const initialState = 0;
+
+      const update = (state, msg, enqueue) => state + msg;
+
+      const view = (state) => [
+        h("div", { style: "color: red", onClick: () => 2 }, [
+          h("p", {}, [
+            text(`The count is ${state}. Click here to increment.`)
+          ])
+        ])
+      ];
+
+      const { enqueue } = init(root, initialState, update, view);
+      enqueue(1);
+    </script>
+  </body>
+</html>
