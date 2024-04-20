@@ -116,6 +116,7 @@ function diffOne(l, r) {
 }
 
 function diffList(ls, rs) {
+  assert(rs instanceof Array, "Expected an array, found", rs);
   let len = Math.max(ls.length, rs.length);
   let diffs = [];
   for (let i = 0; i < len; i++) {
