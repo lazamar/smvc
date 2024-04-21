@@ -1,4 +1,4 @@
-# html-ui
+# smvc
 
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
 
@@ -8,9 +8,9 @@ It uses simple JavaScript, has no dependencies, requires no transpilation, and h
 
 ### Example
 
-Visit the [demos](https://lazamar.github.io/html-ui/demos/) page.
+Visit the [demos](https://lazamar.github.io/smvc/demos/) page.
 
-A complete example. See it in action [here](https://lazamar.github.io/html-ui/demos/minimal.html).
+A complete example. See it in action [here](https://lazamar.github.io/smvc/demos/minimal.html).
 
 ```html
 <html>

@@ -1,4 +1,4 @@
-# [html-ui](https://lazamar.github.io/html-ui/)
+# [smvc](https://lazamar.github.io/smvc/)
 
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
 

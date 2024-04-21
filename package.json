@@ -1,5 +1,5 @@
 {
-  "name": "html-ui",
+  "name": "smvc",
   "version": "1.0.0",
   "description": "A simple pure-JavaScript MVC library",
   "main": "ui.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lazamar/html-ui.git"
+    "url": "git+https://github.com/lazamar/smvc.git"
   },
   "keywords": [
     "mvc"
@@ -16,7 +16,7 @@
   "author": "Marcelo Lazaroni",
   "license": "LGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/lazamar/html-ui/issues"
+    "url": "https://github.com/lazamar/smvc/issues"
   },
-  "homepage": "https://github.com/lazamar/html-ui#readme"
+  "homepage": "https://github.com/lazamar/smvc#readme"
 }
