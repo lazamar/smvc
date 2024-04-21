@@ -1,25 +1,19 @@
+export { init, h, text };
 
-declare namespace SMVC {
-  function init<State, Msg>(
+function init<State, Msg>(
     root: HTMLElement,
     initialState: State,
     update: UpdateFunction<State, Msg>,
     view: ViewFunction<State, Msg>
   ): { enqueue : EnqueueFunction<Msg> };
 
-  function h<Msg>(
+function h<Msg>(
     tag: string,
     properties: Properties<Msg>,
     children: Array<VNode<Msg>>
   ) : VNode<Msg>;
 
-  function t(content: string) : VNode<unknown>;
-}
-
-
-class VNode<Msg> {
-  private hidden : Properties<Msg>;
-}
+function text(content: string) : VNode<unknown>;
 
 // User-defined function to update the state
 type UpdateFunction<State, Msg> =
@@ -32,4 +26,8 @@ type UpdateFunction<State, Msg> =
 type ViewFunction<State, Msg> = (state: State) => Array<VNode<Msg>>
 
 type EnqueueFunction<Msg> = (msg: Msg) => void
+
+class VNode<Msg> {
+  private hidden : Properties<Msg>;
+}
 
