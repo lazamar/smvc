@@ -1,6 +1,6 @@
 {
   "name": "smvc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Straightforward Model View Controller",
   "main": "smvc.js",
   "types": "smvc.d.ts",
