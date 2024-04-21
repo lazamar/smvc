@@ -1,5 +1,7 @@
 # smvc
 
+**Straightforward Model View Controller**
+
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
 
 The entire API consists of 4 functions.
