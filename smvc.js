@@ -1,25 +1,17 @@
-// Spec
+// VirtualNode
 //    = { tag : string
 //      , attributes : { attribute: string }
-//      , listeners : { event: listener } -- support a single listener
-//      , children : [Spec]
+//      , listeners : { event: listener } -- supports a single listener
+//      , children : [VirtualNode]
 //      }
 //    | { textContent : string }
 //
-// ElementDiff
-//    = Replace Element
-//    | Remove
-//    | Create Element
-//    | Modify ContentsDiff
-//    | Noop
-//
-// ContentsDiff
-//    = { removeAttr :: [String]
-//      , setAttr :: { attribute: value }
-//      , removeListeners :: { event: f }
-//      , addListeners :: { event: f }
-//      , children : [ElementDiff]
-//      }
+// Diff
+//    = { replace : VirtualNode }
+//    | { remove : true }
+//    | { create : VirtualNode }
+//    | { modify : { remove :: string[], set :: { attribute : value }, children :: Diff[] } }
+//    | { noop : true }
 //
 const SMVC = (function () {
 
@@ -77,7 +69,7 @@ function eventName(str) {
 
 // diff two specs
 function diffOne(l, r) {
-  assert(r instanceof Element, "Expected an instance of Element, found", r);
+  assert(r instanceof VirtualNode, "Expected an instance of VirtualNode, found", r);
   let isText = l.textContent !== undefined;
   if (isText) {
     return l.textContent !== r.textContent
@@ -132,7 +124,7 @@ function diffList(ls, rs) {
 }
 
 function create(enqueue, spec) {
-  assert(spec instanceof Element, "Expected an instance of Element, found", spec);
+  assert(spec instanceof VirtualNode, "Expected an instance of VirtualNode, found", spec);
 
   if (spec.textContent !== undefined) {
     let el = document.createTextNode(spec.textContent);
@@ -218,24 +210,24 @@ function apply(el, enqueue, childrenDiff) {
   }
 }
 
-class Element {
+class VirtualNode {
   constructor(any) { Object.assign(this, any) }
 }
 
-// Create an HTML element
+// Create an HTML element description (a virtual node)
 function h(tag, attributes, children) {
   assert(typeof tag === "string", "Invalid tag value:", tag);
   assert(typeof attributes === "object", "Expected attributes object. Found:", attributes);
   assert(Array.isArray(children), "Expected children array. Found:", children);
-  return new Element({ tag, attributes, children });
+  return new VirtualNode({ tag, attributes, children });
 }
 
-// Create a text element
+// Create a text element description (a virtual text node)
 function text(textContent) {
-  return new Element({ textContent });
+  return new VirtualNode({ textContent });
 }
 
-// Start managing the contents of an HTML node.
+// Start managing the contents of an HTML element.
 function init(root, initialState, update, view) {
   let state = initialState; // client application state
   let spec = []; // elements spec
