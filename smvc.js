@@ -272,6 +272,10 @@ function init(root, initialState, update, view) {
 return { init, h, text };
 })();
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof define !== 'undefined' && define.amd) { // AMD
+  define([], function () { return SMVC })
+} else if (typeof module !== 'undefined' && module.exports) { // CommonJS
   module.exports = SMVC
+} else if (typeof window !== 'undefined') { // Script tag
+  window.SMVC = SMVC
 }

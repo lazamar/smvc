@@ -1,33 +1,43 @@
-export { init, h, text };
+export {
+  init, h, text,
+  EnqueueFunction, UpdateFunction, ViewFunction, VirtualNode
+};
 
-function init<State, Msg>(
-    root: HTMLElement,
+declare type Listener<Msg> = (e: Event) => Msg | undefined;
+
+declare type Properties<Msg> =
+  { [key: string]: string | boolean | Listener<Msg>
+  , [key: `on${string}`]: Listener<Msg>
+  }
+
+declare function init<State, Msg>(
+    root: Element,
     initialState: State,
     update: UpdateFunction<State, Msg>,
     view: ViewFunction<State, Msg>
   ): { enqueue : EnqueueFunction<Msg> };
 
-function h<Msg>(
+declare function h<Msg>(
     tag: string,
     properties: Properties<Msg>,
-    children: Array<VNode<Msg>>
-  ) : VNode<Msg>;
+    children: Array<VirtualNode<Msg>>
+  ) : VirtualNode<Msg>;
 
-function text(content: string) : VNode<unknown>;
+declare function text<T>(content: string) : VirtualNode<T>;
 
 // User-defined function to update the state
-type UpdateFunction<State, Msg> =
+declare type UpdateFunction<State, Msg> =
   ( state: State,
     msg: Msg,
     enqueue: EnqueueFunction<Msg>
   ) => State
 
 // User-defined function to produce a view
-type ViewFunction<State, Msg> = (state: State) => Array<VNode<Msg>>
+declare type ViewFunction<State, Msg> = (state: State) => Array<VirtualNode<Msg>>
 
-type EnqueueFunction<Msg> = (msg: Msg) => void
+declare type EnqueueFunction<Msg> = (msg: Msg) => void
 
-class VNode<Msg> {
+declare class VirtualNode<Msg> {
   private hidden : Properties<Msg>;
 }
 
