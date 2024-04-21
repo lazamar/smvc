@@ -2,19 +2,21 @@
 
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
 
-It uses simple JavaScript, has no dependencies, requires no transpilation and has 300 lines.
+The entire API consists of 4 functions.
+
+It uses simple JavaScript, has no dependencies, requires no transpilation, and has fewer than 300 lines of code.
 
 ### Example
 
 Visit the [demos](https://lazamar.github.io/html-ui/demos/) page.
 
-A minimal example.
+A complete example. See it in action [here](https://lazamar.github.io/html-ui/demos/minimal.html).
 
 ```html
 <html>
   <body>
     <div id="container"></div>
-	<script src="./ui.js"></script>
+    <script src="./ui.js"></script>
     <script>
       const { init, h, text } = UI;
       const root = document.querySelector("#container");
