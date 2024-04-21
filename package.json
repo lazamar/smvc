@@ -1,0 +1,22 @@
+{
+  "name": "html-ui",
+  "version": "1.0.0",
+  "description": "A simple pure-JavaScript MVC library",
+  "main": "ui.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lazamar/html-ui.git"
+  },
+  "keywords": [
+    "mvc"
+  ],
+  "author": "Marcelo Lazaroni",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/lazamar/html-ui/issues"
+  },
+  "homepage": "https://github.com/lazamar/html-ui#readme"
+}
