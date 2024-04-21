@@ -74,7 +74,7 @@ const { enqueue } = init(root, initialState, update, view);
 
 This library creates elements in the page based on a description of how the page should look like.
 
-The user-defined `view` function should return an this description in the form of an
+The user-defined `view` function should return this description in the form of an
 array of element descriptions.
 
 There are two functions to create HTML element descriptions.
