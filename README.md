@@ -107,6 +107,7 @@ function view(state) {
     h("button", { onClick: e => e }, [ ... ])
   ]
 }
+```
 
 ### Emitting messages
 
