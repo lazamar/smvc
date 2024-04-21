@@ -21,7 +21,7 @@
 //      , children : [ElementDiff]
 //      }
 //
-const UI = (function () {
+const SMVC = (function () {
 
 function assert(predicate, ...args) {
   if (!predicate) {
@@ -281,5 +281,5 @@ return { init, h, text };
 })();
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = UI
+  module.exports = SMVC
 }

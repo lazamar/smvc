@@ -1,4 +1,4 @@
-const { init, h, text } = UI;
+const { init, h, text } = SMVC;
 
 const colours = Array.from({ length: 200 }).map(_ => {
   const r = Math.ceil(Math.random() * 255);

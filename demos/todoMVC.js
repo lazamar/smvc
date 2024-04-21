@@ -1,4 +1,4 @@
-const { init, h, text } = UI;
+const { init, h, text } = SMVC;
 
 const emit = v => _ => v;
 

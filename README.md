@@ -18,7 +18,7 @@ A complete example. See it in action [here](https://lazamar.github.io/smvc/demos
     <div id="container"></div>
     <script src="./smvc.js"></script>
     <script>
-      const { init, h, text } = UI;
+      const { init, h, text } = SMVC;
       const root = document.querySelector("#container");
       const initialState = 0;
 
@@ -41,15 +41,15 @@ A complete example. See it in action [here](https://lazamar.github.io/smvc/demos
 
 ## Quickstart
 
-After importing `smvc.js` start your application by calling `UI.init` with the appropriate arguments.
+After importing `smvc.js` start your application by calling `smvc.init` with the appropriate arguments.
 
 You can use the library as follows:
 
 ```javascript
-// `UI` is the only identifier the library adds to the global
+// `SMVC` is the only identifier the library adds to the global
 // scope. It is an object with a function to start the
 // application and two functions to build html elements
-const { init, h, text } = UI;
+const { init, h, text } = SMVC;
 
 // Where the application will be rendered
 const root = document.querySelector("#container");
@@ -61,7 +61,7 @@ const initialState = { ... };
 function update(state, msg, enqueue) { ... }
 
 // A function to build the view using the `h` and `text`
-// functions from in the UI object.
+// functions from in the SMVC object.
 function view(state) { ... }
 
 // Start the application. `init` returns an object with the
