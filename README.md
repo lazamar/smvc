@@ -1,5 +1,9 @@
 # smvc
 
+[![NPM Version](https://img.shields.io/npm/v/smvc.svg?style=flat)](https://www.npmjs.com/package/smvc)
+![GitHub License](https://img.shields.io/github/license/lazamar/smvc)
+![No Dependencies](https://img.shields.io/badge/dependencies-0-green)
+
 **Straightforward Model View Controller**
 
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
