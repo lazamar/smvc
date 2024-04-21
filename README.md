@@ -82,8 +82,7 @@ There are two functions to create HTML element descriptions.
 * `text(str: string) : Element` - Describe a text node.
 * `h(tag: string, properties: Object, children: Array<Element>) : Element` - Describe an HTML element.
 
-The `properties` object should contain HTML properties and attributes as keys and either
-a string or a function as the value. Functions are used for event listeners.
+The `properties` object should contain HTML properties and attributes as keys.
 
 Keys that start with the `on` prefix in the `properties` attributes are treated as event listeners
 and its values should be functions.
