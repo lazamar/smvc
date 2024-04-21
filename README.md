@@ -16,7 +16,7 @@ A complete example. See it in action [here](https://lazamar.github.io/smvc/demos
 <html>
   <body>
     <div id="container"></div>
-    <script src="./ui.js"></script>
+    <script src="./smvc.js"></script>
     <script>
       const { init, h, text } = UI;
       const root = document.querySelector("#container");
@@ -41,7 +41,7 @@ A complete example. See it in action [here](https://lazamar.github.io/smvc/demos
 
 ## Quickstart
 
-After importing `ui.js` start your application by calling `UI.init` with the appropriate arguments.
+After importing `smvc.js` start your application by calling `UI.init` with the appropriate arguments.
 
 You can use the library as follows:
 

@@ -2,7 +2,7 @@
   "name": "smvc",
   "version": "1.0.0",
   "description": "A simple pure-JavaScript MVC library",
-  "main": "ui.js",
+  "main": "smvc.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0"
   },
