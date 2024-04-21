@@ -84,11 +84,13 @@ There are two functions to create HTML element descriptions.
 
 The `properties` object should contain HTML properties and attributes as keys.
 
-Keys that start with the `on` prefix in the `properties` attributes are treated as event listeners
-and its values should be functions.
+Keys that start with the `on` prefix in the `properties` object are treated as
+event listeners and its values should be functions.
 
-If an event listener returns a value different from `undefined` this value will
-be used as a message and queued to be sent to the update function.
+Event listener functions will be given the event they are handling as an argument.
+
+If an event listener function returns a value different from `undefined` this
+value will be used as a message and queued to be sent to the update function.
 
 Examples:
 
