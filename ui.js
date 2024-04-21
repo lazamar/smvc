@@ -279,3 +279,7 @@ function init(root, initialState, update, view) {
 
 return { init, h, text };
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = UI
+}
