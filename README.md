@@ -1,4 +1,4 @@
-# HTML-UI
+# html-ui
 
 This is a simple-as-it-gets library for using a virtual DOM to separate the handling of state and view.
 
@@ -6,11 +6,15 @@ It uses simple JavaScript, has no dependencies, requires no transpilation and ha
 
 ### Example
 
+Visit the [demos](https://lazamar.github.io/html-ui/demos/) page.
+
+A minimal example.
+
 ```html
 <html>
   <body>
     <div id="container"></div>
-		<script src="./ui.js"></script>
+	<script src="./ui.js"></script>
     <script>
       const { init, h, text } = UI;
       const root = document.querySelector("#container");
@@ -86,11 +90,23 @@ If an event listener returns a value different from `undefined` this value will
 be used as a message and queued to be sent to the update function.
 
 Examples:
-* `h("div", { class: "container" }, [ ... ])` - A `div` with a class.
-* `h("button", { disabled: "true" }, [ ... ])` - A disabled button.
-* `h("button", { onClick: () => "toggle" }, [ ... ])` -
-A button that will emit the string `"toggle"` as a message when clicked.
-* `h("button", { onClick: e => e }, [ ... ])` - A button that will emit a message containing the HTML event handled by the onClick listener.
+
+```javascript
+function view(state) {
+  return [
+    // A `div` with a class.
+    h("div", { class: "container" }, [ ... ]),
+
+    // A disabled button.
+    h("button", { disabled: "true" }, [ ... ]),
+
+    // A button that will emit the string `"toggle"` as a message when clicked.
+    h("button", { onClick: () => "toggle" }, [ ... ]),
+
+    // A button that will emit a message containing the HTML event handled by the onClick listener.
+    h("button", { onClick: e => e }, [ ... ])
+  ]
+}
 
 ### Emitting messages
 
@@ -98,7 +114,7 @@ The state is updated by handling messages in the user-defined `update` function.
 
 There are two ways to emit messages.
 
-*Returning from an event listener*
+**Returning from an event listener**
 
 Any value that is not `undefined` returned by an event listener will be emitted as a message.
 
@@ -108,12 +124,16 @@ Any value that is not `undefined` returned by an event listener will be emitted 
 // where <event> is the HTML event being handled.
 h(
     "button",
-    { onClick : e => ({ tag: "clicked", event: e }) },
+    {
+        onClick : function (e) {
+            return { tag: "clicked", event: e }
+        }
+    },
     [ text("click") ]
 )
 ```
 
-*Using the `enqueue` function*
+**Using the `enqueue` function**
 
 This function is in the object returned by `init` and will schedule a message to be handled.
 
