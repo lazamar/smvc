@@ -67,7 +67,7 @@ function eventName(str) {
   return null;
 }
 
-// diff two specs
+// diff two virtual nodes
 function diffOne(l, r) {
   assert(r instanceof VirtualNode, "Expected an instance of VirtualNode, found", r);
   let isText = l.textContent !== undefined;
@@ -123,27 +123,27 @@ function diffList(ls, rs) {
   return diffs;
 }
 
-function create(enqueue, spec) {
-  assert(spec instanceof VirtualNode, "Expected an instance of VirtualNode, found", spec);
+function create(enqueue, vnode) {
+  assert(vnode instanceof VirtualNode, "Expected an instance of VirtualNode, found", vnode);
 
-  if (spec.textContent !== undefined) {
-    let el = document.createTextNode(spec.textContent);
+  if (vnode.textContent !== undefined) {
+    let el = document.createTextNode(vnode.textContent);
     return el;
   }
 
-  let el = document.createElement(spec.tag);
+  let el = document.createElement(vnode.tag);
   el._ui = { listeners : {}, enqueue };
 
-  for (const attr in spec.attributes) {
+  for (const attr in vnode.attributes) {
     let event = eventName(attr);
-    let value = spec.attributes[attr];
+    let value = vnode.attributes[attr];
     (event === null)
       ? setAttribute(attr, value, el)
       : setListener(el, event, value);
   }
 
-  for (let childSpec of spec.children) {
-    const child = create(enqueue, childSpec);
+  for (let childVNode of vnode.children) {
+    const child = create(enqueue, childVNode);
     el.appendChild(child);
   }
 
@@ -230,7 +230,7 @@ function text(textContent) {
 // Start managing the contents of an HTML element.
 function init(root, initialState, update, view) {
   let state = initialState; // client application state
-  let spec = []; // elements spec
+  let nodes = []; // virtual DOM nodes
   let queue = []; // msg queue
 
   function enqueue(msg) {
@@ -239,9 +239,9 @@ function init(root, initialState, update, view) {
 
   // draws the current state
   function draw() {
-    let newSpec = view(state);
-    apply(root, enqueue, diffList(spec, newSpec));
-    spec = newSpec;
+    let newNodes = view(state);
+    apply(root, enqueue, diffList(nodes, newNodes));
+    nodes = newNodes;
   }
 
   function updateState() {
