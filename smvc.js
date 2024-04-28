@@ -30,11 +30,11 @@ let props = new Set([ "autoplay", "checked", "checked", "contentEditable", "cont
   "coords", "align", "cite", "href", "target", "download", "download",
   "hreflang", "ping", "start", "headers", "scope", "span" ]);
 
-function setProperty(attr, value, el) {
-  if (props.has(attr)) {
-    el[attr] = value;
+function setProperty(prop, value, el) {
+  if (props.has(prop)) {
+    el[prop] = value;
   } else {
-    el.setAttribute(attr, value);
+    el.setAttribute(prop, value);
   }
 }
 
@@ -83,15 +83,15 @@ function diffOne(l, r) {
   const remove = [];
   const set = {};
 
-  for (const attr in l.properties) {
-    if (r.properties[attr] === undefined) {
-      remove.push(attr);
+  for (const prop in l.properties) {
+    if (r.properties[prop] === undefined) {
+      remove.push(prop);
     }
   }
 
-  for (const attr in r.properties) {
-    if (r.properties[attr] !== l.properties[attr]) {
-      set[attr] = r.properties[attr];
+  for (const prop in r.properties) {
+    if (r.properties[prop] !== l.properties[prop]) {
+      set[prop] = r.properties[prop];
     }
   }
 
@@ -133,11 +133,11 @@ function create(enqueue, vnode) {
   let el = document.createElement(vnode.tag);
   el._ui = { listeners : {}, enqueue };
 
-  for (const attr in vnode.properties) {
-    let event = eventName(attr);
-    let value = vnode.properties[attr];
+  for (const prop in vnode.properties) {
+    let event = eventName(prop);
+    let value = vnode.properties[prop];
     (event === null)
-      ? setProperty(attr, value, el)
+      ? setProperty(prop, value, el)
       : setListener(el, event, value);
   }
 
@@ -150,21 +150,21 @@ function create(enqueue, vnode) {
 }
 
 function modify(el, enqueue, diff) {
-  for (const attr of diff.remove) {
-    const event = eventName(attr);
+  for (const prop of diff.remove) {
+    const event = eventName(prop);
     if (event === null) {
-      el.removeAttribute(attr);
+      el.removeAttribute(prop);
     } else {
       el._ui.listeners[event] = undefined;
       el.removeEventListener(event, listener);
     }
   }
 
-  for (const attr in diff.set) {
-    const value = diff.set[attr];
-    const event = eventName(attr);
+  for (const prop in diff.set) {
+    const value = diff.set[prop];
+    const event = eventName(prop);
     (event === null)
-      ? setProperty(attr, value, el)
+      ? setProperty(prop, value, el)
       : setListener(el, event, value);
   }
 
