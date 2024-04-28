@@ -1,6 +1,6 @@
 // VirtualNode
 //    = { tag : string
-//      , attributes : { attribute: string }
+//      , properties : { property: string }
 //      , listeners : { event: listener } -- supports a single listener
 //      , children : [VirtualNode]
 //      }
@@ -10,7 +10,7 @@
 //    = { replace : VirtualNode }
 //    | { remove : true }
 //    | { create : VirtualNode }
-//    | { modify : { remove :: string[], set :: { attribute : value }, children :: Diff[] } }
+//    | { modify : { remove :: string[], set :: { property : value }, children :: Diff[] } }
 //    | { noop : true }
 //
 const SMVC = (function () {
@@ -31,7 +31,7 @@ let props = new Set([ "autoplay", "checked", "checked", "contentEditable", "cont
   "coords", "align", "cite", "href", "target", "download", "download",
   "hreflang", "ping", "start", "headers", "scope", "span" ]);
 
-function setAttribute(attr, value, el) {
+function setProperty(attr, value, el) {
   if (props.has(attr)) {
     el[attr] = value;
   } else {
@@ -84,25 +84,25 @@ function diffOne(l, r) {
   const remove = [];
   const set = {};
 
-  for (const attr in l.attributes) {
-    if (r.attributes[attr] === undefined) {
+  for (const attr in l.properties) {
+    if (r.properties[attr] === undefined) {
       remove.push(attr);
     }
   }
 
-  for (const attr in r.attributes) {
-    if (r.attributes[attr] !== l.attributes[attr]) {
-      set[attr] = r.attributes[attr];
+  for (const attr in r.properties) {
+    if (r.properties[attr] !== l.properties[attr]) {
+      set[attr] = r.properties[attr];
     }
   }
 
   const children = diffList(l.children, r.children);
   const noChildrenChange = children.every(e => e.noop);
-  const noAttributeChange =
+  const noPropertyChange =
         (remove.length === 0) &&
         (Array.from(Object.keys(set)).length == 0);
 
-  return (noChildrenChange && noAttributeChange)
+  return (noChildrenChange && noPropertyChange)
     ? { noop : true }
     : { modify: { remove, set, children } };
 }
@@ -134,11 +134,11 @@ function create(enqueue, vnode) {
   let el = document.createElement(vnode.tag);
   el._ui = { listeners : {}, enqueue };
 
-  for (const attr in vnode.attributes) {
+  for (const attr in vnode.properties) {
     let event = eventName(attr);
-    let value = vnode.attributes[attr];
+    let value = vnode.properties[attr];
     (event === null)
-      ? setAttribute(attr, value, el)
+      ? setProperty(attr, value, el)
       : setListener(el, event, value);
   }
 
@@ -165,7 +165,7 @@ function modify(el, enqueue, diff) {
     const value = diff.set[attr];
     const event = eventName(attr);
     (event === null)
-      ? setAttribute(attr, value, el)
+      ? setProperty(attr, value, el)
       : setListener(el, event, value);
   }
 
@@ -215,11 +215,11 @@ class VirtualNode {
 }
 
 // Create an HTML element description (a virtual node)
-function h(tag, attributes, children) {
+function h(tag, properties, children) {
   assert(typeof tag === "string", "Invalid tag value:", tag);
-  assert(typeof attributes === "object", "Expected attributes object. Found:", attributes);
+  assert(typeof properties === "object", "Expected properties object. Found:", properties);
   assert(Array.isArray(children), "Expected children array. Found:", children);
-  return new VirtualNode({ tag, attributes, children });
+  return new VirtualNode({ tag, properties, children });
 }
 
 // Create a text element description (a virtual text node)
