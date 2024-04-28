@@ -4,7 +4,7 @@
 //      , listeners : { event: listener } -- supports a single listener
 //      , children : [VirtualNode]
 //      }
-//    | { textContent : string }
+//    | { text : string }
 //
 // Diff
 //    = { replace : VirtualNode }
@@ -70,9 +70,9 @@ function eventName(str) {
 // diff two virtual nodes
 function diffOne(l, r) {
   assert(r instanceof VirtualNode, "Expected an instance of VirtualNode, found", r);
-  let isText = l.textContent !== undefined;
+  let isText = l.text !== undefined;
   if (isText) {
-    return l.textContent !== r.textContent
+    return l.text !== r.text
       ? { replace: r }
       : { noop : true };
   }
@@ -126,8 +126,8 @@ function diffList(ls, rs) {
 function create(enqueue, vnode) {
   assert(vnode instanceof VirtualNode, "Expected an instance of VirtualNode, found", vnode);
 
-  if (vnode.textContent !== undefined) {
-    let el = document.createTextNode(vnode.textContent);
+  if (vnode.text !== undefined) {
+    let el = document.createTextNode(vnode.text);
     return el;
   }
 
@@ -223,8 +223,8 @@ function h(tag, properties, children) {
 }
 
 // Create a text element description (a virtual text node)
-function text(textContent) {
-  return new VirtualNode({ textContent });
+function text(content) {
+  return new VirtualNode({ text: content });
 }
 
 // Start managing the contents of an HTML element.
