@@ -1,7 +1,6 @@
 // VirtualNode
 //    = { tag : string
 //      , properties : { property: string }
-//      , listeners : { event: listener } -- supports a single listener
 //      , children : [VirtualNode]
 //      }
 //    | { text : string }
@@ -174,22 +173,21 @@ function modify(el, enqueue, diff) {
 }
 
 function apply(el, enqueue, childrenDiff) {
-  for (let i = 0, k = 0; i < childrenDiff.length; i++, k++) {
-    let diff = childrenDiff[i];
+  let children = Array.from(el.childNodes);
+
+  childrenDiff.forEach((diff, i) => {
     let action = Object.keys(diff)[0];
     switch (action) {
       case "remove":
-        el.childNodes[k].remove();
-        k--;
+        children[i].remove();
         break;
 
       case "modify":
-        modify(el.childNodes[k], enqueue, diff.modify);
+        modify(children[i], enqueue, diff.modify);
         break;
 
       case "create": {
-        const len = el.childNodes.length;
-        assert(k === len, "adding to the middle of children", k, len);
+        assert(i >= children.length, "adding to the middle of children", i, children.length);
         let child = create(enqueue, diff.create);
         el.appendChild(child);
         break;
@@ -197,7 +195,7 @@ function apply(el, enqueue, childrenDiff) {
 
       case "replace": {
         let child = create(enqueue, diff.replace);
-        el.childNodes[k].replaceWith(child);
+        children[i].replaceWith(child);
         break;
       }
 
@@ -207,7 +205,7 @@ function apply(el, enqueue, childrenDiff) {
       default:
         throw new Error("Unexpected diff option: " + Object.keys(diff));
     }
-  }
+  });
 }
 
 class VirtualNode {
