@@ -21,7 +21,7 @@ function assert(predicate, ...args) {
   }
 }
 
-let props = new Set([ "autoplay", "checked", "checked", "contentEditable", "controls",
+const props = new Set([ "autoplay", "checked", "checked", "contentEditable", "controls",
   "default", "hidden", "loop", "selected", "spellcheck", "value", "id", "title",
   "accessKey", "dir", "dropzone", "lang", "src", "alt", "preload", "poster",
   "kind", "label", "srclang", "sandbox", "srcdoc", "type", "value", "accept",
@@ -69,7 +69,7 @@ function eventName(str) {
 // diff two virtual nodes
 function diffOne(l, r) {
   assert(r instanceof VirtualNode, "Expected an instance of VirtualNode, found", r);
-  let isText = l.text !== undefined;
+  const isText = l.text !== undefined;
   if (isText) {
     return l.text !== r.text
       ? { replace: r }
@@ -108,7 +108,7 @@ function diffOne(l, r) {
 
 function diffList(ls, rs) {
   assert(rs instanceof Array, "Expected an array, found", rs);
-  let length = Math.max(ls.length, rs.length);
+  const length = Math.max(ls.length, rs.length);
   return Array.from({ length })
     .map((_,i) =>
       (ls[i] === undefined)
@@ -123,22 +123,22 @@ function create(enqueue, vnode) {
   assert(vnode instanceof VirtualNode, "Expected an instance of VirtualNode, found", vnode);
 
   if (vnode.text !== undefined) {
-    let el = document.createTextNode(vnode.text);
+    const el = document.createTextNode(vnode.text);
     return el;
   }
 
-  let el = document.createElement(vnode.tag);
+  const el = document.createElement(vnode.tag);
   el._ui = { listeners : {}, enqueue };
 
   for (const prop in vnode.properties) {
-    let event = eventName(prop);
-    let value = vnode.properties[prop];
+    const event = eventName(prop);
+    const value = vnode.properties[prop];
     (event === null)
       ? setProperty(prop, value, el)
       : setListener(el, event, value);
   }
 
-  for (let childVNode of vnode.children) {
+  for (const childVNode of vnode.children) {
     const child = create(enqueue, childVNode);
     el.appendChild(child);
   }
@@ -170,10 +170,10 @@ function modify(el, enqueue, diff) {
 }
 
 function apply(el, enqueue, childrenDiff) {
-  let children = Array.from(el.childNodes);
+  const children = Array.from(el.childNodes);
 
   childrenDiff.forEach((diff, i) => {
-    let action = Object.keys(diff)[0];
+    const action = Object.keys(diff)[0];
     switch (action) {
       case "remove":
         children[i].remove();
@@ -185,13 +185,13 @@ function apply(el, enqueue, childrenDiff) {
 
       case "create": {
         assert(i >= children.length, "adding to the middle of children", i, children.length);
-        let child = create(enqueue, diff.create);
+        const child = create(enqueue, diff.create);
         el.appendChild(child);
         break;
       }
 
       case "replace": {
-        let child = create(enqueue, diff.replace);
+        const child = create(enqueue, diff.replace);
         children[i].replaceWith(child);
         break;
       }
