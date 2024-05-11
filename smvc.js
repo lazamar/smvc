@@ -108,18 +108,15 @@ function diffOne(l, r) {
 
 function diffList(ls, rs) {
   assert(rs instanceof Array, "Expected an array, found", rs);
-  let len = Math.max(ls.length, rs.length);
-  let diffs = [];
-  for (let i = 0; i < len; i++) {
-    diffs.push(
+  let length = Math.max(ls.length, rs.length);
+  return Array.from({ length })
+    .map((_,i) =>
       (ls[i] === undefined)
       ? { create: rs[i] }
       : (rs[i] == undefined)
       ? { remove: true }
       : diffOne(ls[i], rs[i])
     );
-  }
-  return diffs;
 }
 
 function create(enqueue, vnode) {
