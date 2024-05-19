@@ -12,6 +12,8 @@ The entire API consists of 4 functions.
 
 It uses simple JavaScript, has no dependencies, requires no transpilation, and has fewer than 300 lines of code.
 
+Read the [blog post](https://lazamar.github.io/virtual-dom/)
+
 ### Example
 
 Visit the [demos](https://lazamar.github.io/smvc/demos/) page.
