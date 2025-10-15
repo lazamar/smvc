@@ -1,7 +1,7 @@
 # smvc
 
 [![NPM Version](https://img.shields.io/npm/v/smvc.svg?style=flat)](https://www.npmjs.com/package/smvc)
-![GitHub License](https://img.shields.io/github/license/lazamar/smvc)
+[![GitHub License](https://img.shields.io/github/license/lazamar/smvc)](https://github.com/lazamar/smvc/blob/main/LICENSE.md)
 ![No Dependencies](https://img.shields.io/badge/dependencies-0-green)
 
 **Straightforward Model View Controller**
